@@ -14,3 +14,5 @@ vendor/gems/
 *.crt
 *.csr
 *.secret
+
+creds.env
