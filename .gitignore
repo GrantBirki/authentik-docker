@@ -17,3 +17,9 @@ vendor/gems/
 
 creds.env
 .env
+
+# authentik-docker specific
+media/
+custom-templates/
+custom-plugins/
+certs/
