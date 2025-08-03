@@ -15,4 +15,4 @@ docker compose -f docker-compose.yml down --remove-orphans -v -t 1
 echo "[i] Building docker containers"
 docker compose -f docker-compose.yml up --build -d
 
-echo "[+] Containers are now running! - visit http://localhost/if/flow/initial-setup/ to complete the setup."
+echo -e "[+] Containers are now running! - visit ${BLUE}http://localhost/if/flow/initial-setup/${OFF} to complete the setup."
