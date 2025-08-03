@@ -15,4 +15,4 @@ docker compose -f docker-compose.yml down --remove-orphans -v -t 1
 echo "[i] Building docker containers"
 docker compose -f docker-compose.yml up --build -d
 
-echo "[+] Containers are now running!"
+echo "[+] Containers are now running! - visit http://localhost:80 to access the application."
