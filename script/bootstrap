@@ -4,3 +4,23 @@ set -e # prevent any kind of script failures
 
 source script/env "$@"
 
+# if the .env file does not exist, create it
+if [ ! -f "$DIR/.env" ] || [ ! -s "$DIR/.env" ]; then
+  echo -e "${BLUE}Creating .env file...${OFF}"
+  touch "$DIR/.env"
+  echo -e "${GREEN}.env file created successfully!${OFF}"
+  echo "PG_PASS=$(openssl rand -base64 36 | tr -d '\n')" >> .env
+  echo "AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')" >> .env
+  echo -e "${GREEN}.env file has been hydrated with secret values${OFF}"
+  echo -e "${BLUE}Appending additional configurations to .env file...${OFF}"
+  {
+    echo "COMPOSE_PORT_HTTP=80"
+    echo "COMPOSE_PORT_HTTPS=443"
+    echo "AUTHENTIK_ERROR_REPORTING__ENABLED=false"
+  } >> "$DIR/.env"
+  echo -e "${GREEN}Additional configurations appended to .env file successfully!${OFF}"
+  echo -e "${BLUE}Please review the .env file and adjust any settings as necessary.${OFF}"
+else
+  echo -e "${BLUE}.env file already exists.${OFF}"
+  echo -e "skipping .env creation and hydration. If you want to regenerate it, ${RED}delete the file${OFF} and run this script again."
+fi

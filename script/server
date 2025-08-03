@@ -3,3 +3,16 @@
 set -e
 
 source script/env "$@"
+
+# if the .env file does not exist, or if it is empty, call the script/bootstrap script
+if [ ! -f "$DIR/.env" ] || [ ! -s "$DIR/.env" ]; then
+  script/bootstrap "$@"
+fi
+
+echo "[-] Killing old docker processes"
+docker compose -f docker-compose.yml down --remove-orphans -v -t 1
+
+echo "[i] Building docker containers"
+docker compose -f docker-compose.yml up --build -d
+
+echo "[+] Containers are now running!"
