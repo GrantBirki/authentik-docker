@@ -4,15 +4,35 @@ set -e
 
 source script/env "$@"
 
+# Parse command line arguments
+DESTROY_VOLUMES=false
+for arg in "$@"; do
+  case $arg in
+    --destroy)
+      DESTROY_VOLUMES=true
+      shift
+      ;;
+    *)
+      # Unknown option, pass through to other scripts
+      ;;
+  esac
+done
+
 # if the .env file does not exist, or if it is empty, call the script/bootstrap script
 if [ ! -f "$DIR/.env" ] || [ ! -s "$DIR/.env" ]; then
   script/bootstrap "$@"
 fi
 
-echo "[-] Killing old docker processes"
-docker compose -f docker-compose.yml down --remove-orphans -v -t 1
-
-echo "[i] Building docker containers"
-docker compose -f docker-compose.yml up --build -d
+if [ "$DESTROY_VOLUMES" = true ]; then
+  echo -e "${RED}[!] Destroying all containers and volumes (--destroy flag provided)${OFF}"
+  docker compose -f docker-compose.yml down --remove-orphans -v -t 1
+  echo -e "${BLUE}[i] Building docker containers from scratch${OFF}"
+  docker compose -f docker-compose.yml up --build -d
+else
+  echo -e "${BLUE}[-] Restarting docker containers (preserving volumes and data)${OFF}"
+  docker compose -f docker-compose.yml down --remove-orphans -t 1
+  echo -e "${BLUE}[i] Starting docker containers${OFF}"
+  docker compose -f docker-compose.yml up -d
+fi
 
 echo -e "[+] Containers are now running! - visit ${BLUE}http://localhost/if/flow/initial-setup/${OFF} to complete the setup."
